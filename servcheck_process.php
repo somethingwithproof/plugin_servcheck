@@ -298,7 +298,7 @@ if ($last_log['result'] != $results['result'] || $last_log['result_search'] != $
 		putenv('SERVCHECK_RESULT='                 . $results['result']);
 		putenv('SERVCHECK_RESULT_SEARCH='          . $results['result_search']);
 		putenv('SERVCHECK_CURL_RETURN_CODE='       . $results['curl_return']);
-		putenv('SERVCHECK_CERTIFICATE_EXPIRATION=' . (isset($test['expiry_date']) ? $test['expiry_date'] : 'Not tested'));
+		putenv('SERVCHECK_CERTIFICATE_EXPIRATION=' . ($test['expiry_date'] ?? 'Not tested'));
 
 		if (file_exists($command) && is_executable($command)) {
 			$output = array();

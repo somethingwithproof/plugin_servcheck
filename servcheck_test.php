@@ -403,7 +403,7 @@ function form_save() {
 		}
 	}
 
-	header('Location: servcheck_test.php?action=edit&id=' . (isset($id)? $id : get_request_var('id')) . '&header=false');
+	header('Location: servcheck_test.php?action=edit&id=' . ($id ?? get_request_var('id')) . '&header=false');
 	exit;
 
 }

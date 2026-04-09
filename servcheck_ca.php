@@ -177,7 +177,7 @@ function ca_edit() {
 	draw_edit_form(
 		array(
 			'config' => array('no_form_tag' => true),
-			'fields' => inject_form_variables($servcheck_ca_fields, (isset($ca) ? $ca : array()))
+			'fields' => inject_form_variables($servcheck_ca_fields, ($ca ?? array()))
 		)
 	);
 

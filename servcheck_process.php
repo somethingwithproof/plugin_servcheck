@@ -108,10 +108,128 @@ if (!$force) {
 	$enabled = 'AND enabled = "on"';
 }
 
+<<<<<<< Updated upstream
 $test = db_fetch_row_prepared('SELECT *, UNIX_TIMESTAMP(DATE_ADD(lastcheck, INTERVAL (? * how_often) SECOND)) AS next_run
 	FROM plugin_servcheck_test
 	WHERE id = ? ' . $enabled,
 	array(($poller_interval-10), $test_id));
+||||||| Stash base
+$tests = db_fetch_cell_prepared('SELECT count(*) 
+	FROM plugin_servcheck_test 
+	WHERE ' . $sql_where,
+	$params);
+
+$use_processes = min($tests, $max_processes);
+
+if ($process > 0) {
+	if ($process > $use_processes) {
+		print 'ERROR: Process number is bigger than max. servcheck process' . PHP_EOL;
+
+		unregister_process('servcheck', "child:$poller_id", $process);
+
+		exit(1);
+	} else {
+		$x = $process - 1;
+
+		$baseSize  = intdiv($tests, $use_processes);
+		$remainder = $tests % $use_processes;
+
+		$extraBefore = min($x, $remainder);
+
+		$length = $baseSize + ($x < $remainder ? 1 : 0);
+		$offset = $x * $baseSize + $extraBefore;
+
+		array_unshift($params, ($poller_interval - 10));
+
+		$tests = db_fetch_assoc_prepared("SELECT *, UNIX_TIMESTAMP(DATE_ADD(last_check,
+			INTERVAL (? * how_often) SECOND)) AS next_run
+			FROM plugin_servcheck_test
+			WHERE $sql_where
+			LIMIT $offset,  $length",
+			$params);
+
+		print "Process: $process, offset: $offset, length: $length" . PHP_EOL;
+	}
+}
+
+if ($test_id > 0) {
+	$sql_where .= 'AND id = ?';
+	$params[] = $test_id;
+	array_unshift($params, ($poller_interval - 10));
+
+	$tests = db_fetch_assoc_prepared("SELECT *, UNIX_TIMESTAMP(DATE_ADD(last_check,
+		INTERVAL (? * how_often) SECOND)) AS next_run
+		FROM plugin_servcheck_test
+		WHERE $sql_where",
+		$params);
+}
+
+if (!cacti_sizeof($tests)) {
+	print 'ERROR: Test/tests not Found!' . PHP_EOL;
+
+	unregister_process('servcheck', "child:$poller_id", $process);
+=======
+$tests = db_fetch_cell_prepared('SELECT count(*) 
+	FROM plugin_servcheck_test 
+	WHERE ' . $sql_where,
+	$params);
+
+$use_processes = min($tests, $max_processes);
+
+if ($process > 0) {
+	if ($process > $use_processes) {
+		print 'ERROR: Process number is bigger than max. servcheck process' . PHP_EOL;
+
+		unregister_process('servcheck', "child:$poller_id", $process);
+
+		exit(1);
+	} else {
+		$x = $process - 1;
+
+		$baseSize  = intdiv($tests, $use_processes);
+		$remainder = $tests % $use_processes;
+
+		$extraBefore = min($x, $remainder);
+
+		$length = $baseSize + ($x < $remainder ? 1 : 0);
+		$offset = $x * $baseSize + $extraBefore;
+
+		/* FIND-002 hardening: both values derive from integer arithmetic above, but
+		 * explicit (int) casts make the contract unambiguous and survive future edits
+		 * that might route user-supplied input through these variables. */
+		$offset = max(0, (int) $offset);
+		$length = max(1, (int) $length);
+
+		array_unshift($params, ($poller_interval - 10));
+
+		$tests = db_fetch_assoc_prepared("SELECT *, UNIX_TIMESTAMP(DATE_ADD(last_check,
+			INTERVAL (? * how_often) SECOND)) AS next_run
+			FROM plugin_servcheck_test
+			WHERE $sql_where
+			LIMIT $offset, $length",
+			$params);
+
+		print "Process: $process, offset: $offset, length: $length" . PHP_EOL;
+	}
+}
+
+if ($test_id > 0) {
+	$sql_where .= 'AND id = ?';
+	$params[] = $test_id;
+	array_unshift($params, ($poller_interval - 10));
+
+	$tests = db_fetch_assoc_prepared("SELECT *, UNIX_TIMESTAMP(DATE_ADD(last_check,
+		INTERVAL (? * how_often) SECOND)) AS next_run
+		FROM plugin_servcheck_test
+		WHERE $sql_where",
+		$params);
+}
+
+if (!cacti_sizeof($tests)) {
+	print 'ERROR: Test/tests not Found!' . PHP_EOL;
+
+	unregister_process('servcheck', "child:$poller_id", $process);
+>>>>>>> Stashed changes
 
 if (!cacti_sizeof($test)) {
 	print 'ERROR: Test not Found' . PHP_EOL;
@@ -369,11 +487,44 @@ if ($new_notify_expire) {
 /* register process end */
 register_shutdown($test_id);
 
+<<<<<<< Updated upstream
 /* purge old entries from the log */
+||||||| Stash base
+	if ($test['notify_accounts'] != '') {
+		$tmp = db_fetch_row_prepared('SELECT email_address
+			FROM user_auth
+			WHERE id IN (' . $test['notify_accounts'] . ')');
+=======
+	if ($test['notify_accounts'] != '') {
+		/* FIND-001 hardening: reject any value that is not a list of positive integers
+		 * before interpolation. A stored payload like "1) UNION SELECT ..." is silently
+		 * dropped rather than forwarded to the DB engine. */
+		$ids = \PluginServcheck\NotifyAccounts::parseIds((string) $test['notify_accounts']);
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 db_execute_prepared('DELETE FROM plugin_servcheck_log
 	WHERE lastcheck < FROM_UNIXTIME(?)',
 	array(time() - (86400 * 90)));
+||||||| Stash base
+		foreach ($tmp as $acc) {
+			$notify_account[] = $acc;
+		}
+	}
+=======
+		if ($ids !== []) {
+			$placeholders = implode(',', array_fill(0, count($ids), '?'));
+			$tmp = db_fetch_assoc_prepared(
+				"SELECT email_address FROM user_auth WHERE id IN ($placeholders)",
+				$ids
+			);
+
+			foreach ($tmp as $acc) {
+				$notify_account[] = $acc;
+			}
+		}
+	}
+>>>>>>> Stashed changes
 
 /* exit */
 

@@ -30,7 +30,7 @@ $ca_info = $config['base_path'] . '/plugins/servcheck/ca-bundle.crt';
 function curl_try ($test) {
 	global $user_agent, $config, $ca_info, $service_types_ports;
 
-	$cert_info = array();
+	$cert_info = [];
 
 	// default result
 	$results['result'] = 'ok';
@@ -38,7 +38,7 @@ function curl_try ($test) {
 	$results['error'] = '';
 	$results['result_search'] = 'not tested';
 
-	$options = array(
+	$options = [
 		CURLOPT_HEADER         => true,
 		CURLOPT_USERAGENT      => $user_agent,
 		CURLOPT_RETURNTRANSFER => true,
@@ -46,7 +46,7 @@ function curl_try ($test) {
 		CURLOPT_MAXREDIRS      => 4,
 		CURLOPT_TIMEOUT        => $test['timeout_trigger'],
 		CURLOPT_CAINFO         => $ca_info,
-	);
+	];
 
 	if (($test['type'] == 'web_http' || $test['type'] == 'web_https') && empty($test['path'])) {
 		cacti_log('Empty path, nothing to test');
@@ -118,7 +118,7 @@ function curl_try ($test) {
 		plugin_servcheck_debug('Preparing own CA chain file ' . $ca_info , $test);
 
 		$cert = db_fetch_cell_prepared('SELECT cert FROM plugin_servcheck_ca WHERE id = ?',
-			array($test['ca']));
+			[$test['ca']]);
 
 		$cert_file = fopen($ca_info, 'a');
 		if ($cert_file) {
@@ -141,7 +141,7 @@ function curl_try ($test) {
 			$proxy = db_fetch_row_prepared('SELECT *
 				FROM plugin_servcheck_proxies
 				WHERE id = ?',
-				array($test['proxy_server']));
+				[$test['proxy_server']]);
 
 			if (cacti_sizeof($proxy)) {
 				$options[CURLOPT_PROXY] = $proxy['hostname'];
@@ -192,12 +192,12 @@ function curl_try ($test) {
 
 	plugin_servcheck_debug('cURL options: ' . clean_up_lines(var_export($options, true)));
 
-	curl_setopt_array($process,$options);
+	curl_setopt_[$process,$options];
 
 	plugin_servcheck_debug('Executing curl request', $test);
 
 	$data = curl_exec($process);
-	$data = str_replace(array("'", "\\"), array(''), $data);
+	$data = str_replace(["'", "\\"], [''], $data);
 	$results['data'] = $data;
 
 	// Get information regarding a specific transfer, cert info too
@@ -210,7 +210,7 @@ function curl_try ($test) {
 	plugin_servcheck_debug('Data: ' . clean_up_lines(var_export($data, true)));
 
 	if ($results['curl_return'] > 0) {
-		$results['error'] =  str_replace(array('"', "'"), '', (curl_error($process)));
+		$results['error'] =  str_replace(['"', "'"], '', (curl_error($process)));
 	}
 
 	if ($test['ca'] > 0) {
@@ -421,14 +421,14 @@ function mqtt_try ($test) {
 
 	plugin_servcheck_debug('cURL options: ' . clean_up_lines(var_export($options, true)));
 
-	curl_setopt_array($process,$options);
+	curl_setopt_[$process,$options];
 
 	plugin_servcheck_debug('Executing curl request', $test);
 
 	curl_exec($process);
 	$x = fclose($file);
 
-	$data = str_replace(array("'", "\\"), array(''), file_get_contents($filename));
+	$data = str_replace(["'", "\\"], [''], file_get_contents($filename));
 	$results['data'] = $data;
 
 	// Get information regarding a specific transfer
@@ -444,7 +444,7 @@ function mqtt_try ($test) {
 	if ($results['curl_return'] == 42) {
 		$results['curl_return'] = 0;
 	} elseif ($results['curl_return'] > 0) {
-		$results['error'] =  str_replace(array('"', "'"), '', (curl_error($process)));
+		$results['error'] =  str_replace(['"', "'"], '', (curl_error($process)));
 	}
 
 	curl_close($process);
@@ -508,7 +508,7 @@ function mqtt_try ($test) {
 function doh_try ($test) {
 	global $user_agent, $config, $ca_info, $service_types_ports;
 
-	$cert_info = array();
+	$cert_info = [];
 
 	// default result
 	$results['result'] = 'ok';
@@ -516,7 +516,7 @@ function doh_try ($test) {
 	$results['error'] = '';
 	$results['result_search'] = 'not tested';
 
-	$options = array(
+	$options = [
 		CURLOPT_HEADER         => true,
 		CURLOPT_USERAGENT      => $user_agent,
 		CURLOPT_RETURNTRANSFER => true,
@@ -524,7 +524,7 @@ function doh_try ($test) {
 		CURLOPT_MAXREDIRS      => 4,
 		CURLOPT_TIMEOUT        => $test['timeout_trigger'],
 		CURLOPT_CAINFO         => $ca_info,
-	);
+	];
 
 	if (empty($test['hostname']) || empty($test['dns_query'])) {
 		cacti_log('Empty hsotname or dns_query, nothing to test');
@@ -550,7 +550,7 @@ function doh_try ($test) {
 		plugin_servcheck_debug('Preparing own CA chain file ' . $ca_info , $test);
 
 		$cert = db_fetch_cell_prepared('SELECT cert FROM plugin_servcheck_ca WHERE id = ?',
-			array($test['ca']));
+			[$test['ca']]);
 
 		$cert_file = fopen($ca_info, 'a');
 		if ($cert_file) {
@@ -579,12 +579,12 @@ function doh_try ($test) {
 
 	plugin_servcheck_debug('cURL options: ' . clean_up_lines(var_export($options, true)));
 
-	curl_setopt_array($process,$options);
+	curl_setopt_[$process,$options];
 
 	plugin_servcheck_debug('Executing curl request', $test);
 
 	$data = curl_exec($process);
-	$data = str_replace(array("'", "\\"), array(''), $data);
+	$data = str_replace(["'", "\\"], [''], $data);
 	$results['data'] = $data;
 
 	// Get information regarding a specific transfer, cert info too
@@ -597,7 +597,7 @@ function doh_try ($test) {
 	plugin_servcheck_debug('Data: ' . clean_up_lines(var_export($data, true)));
 
 	if ($results['curl_return'] > 0) {
-		$results['error'] =  str_replace(array('"', "'"), '', (curl_error($process)));
+		$results['error'] =  str_replace(['"', "'"], '', (curl_error($process)));
 	}
 
 	if ($test['ca'] > 0) {

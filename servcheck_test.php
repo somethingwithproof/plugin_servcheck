@@ -46,7 +46,7 @@ switch (get_request_var('action')) {
 		$id = get_filter_request_var('id');
 
 		if ($id > 0) {
-			db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "on" WHERE id = ?', array($id));
+			db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "on" WHERE id = ?', [$id]);
 		}
 
 		header('Location: servcheck_test.php?header=false');
@@ -57,7 +57,7 @@ switch (get_request_var('action')) {
 		$id = get_filter_request_var('id');
 
 		if ($id > 0) {
-			db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "" WHERE id = ?', array($id));
+			db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "" WHERE id = ?', [$id]);
 		}
 
 		header('Location: servcheck_test.php?header=false');
@@ -120,23 +120,23 @@ function form_actions() {
 			if (cacti_sizeof($tests)) {
 				if ($action == SERVCHECK_ACTION_TEST_DELETE) { // delete
 					foreach ($tests as $id) {
-						db_execute_prepared('DELETE FROM plugin_servcheck_test WHERE id = ?', array($id));
-						db_execute_prepared('DELETE FROM plugin_servcheck_log WHERE test_id = ?', array($id));
+						db_execute_prepared('DELETE FROM plugin_servcheck_test WHERE id = ?', [$id]);
+						db_execute_prepared('DELETE FROM plugin_servcheck_log WHERE test_id = ?', [$id]);
 					}
 				} elseif ($action == SERVCHECK_ACTION_TEST_DISABLE) { // disable
 					foreach ($tests as $id) {
-						db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "" WHERE id = ?', array($id));
+						db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "" WHERE id = ?', [$id]);
 					}
 				} elseif ($action == SERVCHECK_ACTION_TEST_ENABLE) { // enable
 					foreach ($tests as $id) {
-						db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "on" WHERE id = ?', array($id));
+						db_execute_prepared('UPDATE plugin_servcheck_test SET enabled = "on" WHERE id = ?', [$id]);
 					}
 				} elseif ($action == SERVCHECK_ACTION_TEST_DUPLICATE) { // duplicate
 					foreach($tests as $test) {
 						$newid = 1;
 
 						foreach ($tests as $id) {
-							$save = db_fetch_row_prepared('SELECT * FROM plugin_servcheck_test WHERE id = ?', array($id));
+							$save = db_fetch_row_prepared('SELECT * FROM plugin_servcheck_test WHERE id = ?', [$id]);
 							$save['id']           = 0;
 							$save['display_name'] = 'New Service Check (' . $newid . ')';
 							$save['path']         = '/';
@@ -165,7 +165,7 @@ function form_actions() {
 
 	/* setup some variables */
 	$test_list  = '';
-	$test_array = array();
+	$test_array = [];
 
 	/* loop through each of the tests selected on the previous page and get more info about them */
 	foreach ($_POST as $var => $val) {
@@ -174,7 +174,7 @@ function form_actions() {
 			input_validate_input_number($matches[1]);
 			/* ==================================================== */
 
-			$test_list .= '<li>' . __esc(db_fetch_cell_prepared('SELECT display_name FROM plugin_servcheck_test WHERE id = ?', array($matches[1]))) . '</li>';
+			$test_list .= '<li>' . __esc(db_fetch_cell_prepared('SELECT display_name FROM plugin_servcheck_test WHERE id = ?', [$matches[1]])) . '</li>';
 			$test_array[] = $matches[1];
 		}
 	}
@@ -324,7 +324,7 @@ function form_save() {
 	}
 
 	if ($category == 'ldap') {
-		if (get_filter_request_var('ldapsearch', FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/^[a-zA-Z0-9\.\- \*\=,]+$/')))) {
+		if (get_filter_request_var('ldapsearch', FILTER_VALIDATE_REGEXP, array('options' => ['regexp' => '/^[a-zA-Z0-9\.\- \*\=,]+$/']))) {
 			$save['ldapsearch'] = get_nfilter_request_var('ldapsearch');
 		} else {
 			raise_message(3);
@@ -364,13 +364,13 @@ function form_save() {
 		$save['certexpirenotify'] = '';
 	}
 
-	if (isset_request_var('username') && get_nfilter_request_var('username') != '' && get_filter_request_var('username', FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/^[a-z0-9A-Z_\/@.\- \=,]{1,}$/')))) {
+	if (isset_request_var('username') && get_nfilter_request_var('username') != '' && get_filter_request_var('username', FILTER_VALIDATE_REGEXP, array('options' => ['regexp' => '/^[a-z0-9A-Z_\/@.\- \=,]{1,}$/']))) {
 		$save['username'] = servcheck_hide_text(get_nfilter_request_var('username'));
 		$save['password'] = servcheck_hide_text(get_nfilter_request_var('password'));
 	}
 
 	if ($category == 'web' || $category == 'ftp' || $category == 'smb') {
-		if (isset_request_var('path') && get_filter_request_var('path', FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/^[a-zA-Z0-9_;\-\/\.\?=]+$/')))) {
+		if (isset_request_var('path') && get_filter_request_var('path', FILTER_VALIDATE_REGEXP, array('options' => ['regexp' => '/^[a-zA-Z0-9_;\-\/\.\?=]+$/']))) {
 			$save['path'] = get_nfilter_request_var('path');
 		} else {
 			raise_message(3);
@@ -414,9 +414,9 @@ function purge_log_events($id) {
 	$name = db_fetch_cell_prepared('SELECT display_name
 		FROM plugin_servcheck_test
 		WHERE id = ?',
-		array($id));
+		[$id]);
 
-	db_execute_prepared('DELETE FROM plugin_servcheck_log WHERE test_id = ?', array($id));
+	db_execute_prepared('DELETE FROM plugin_servcheck_log WHERE test_id = ?', [$id]);
 
 	raise_message('test_log_purged', __('The Service Check history was purged for %s', $name, 'servcheck'), MESSAGE_LEVEL_INFO);
 }
@@ -429,7 +429,7 @@ function servcheck_edit_test() {
 	get_filter_request_var('id');
 	/* ==================================================== */
 
-	$test = array();
+	$test = [];
 
 	if (!isempty_request_var('id')) {
 		$test = db_fetch_row_prepared('SELECT * FROM plugin_servcheck_test WHERE id = ?', array(get_request_var('id')), false);
@@ -455,7 +455,7 @@ function servcheck_edit_test() {
 
 	draw_edit_form(
 		array(
-			'config' => array('form_name' => 'chk'),
+			'config' => ['form_name' => 'chk'],
 			'fields' => inject_form_variables($servcheck_test_fields, $test)
 		)
 	);
@@ -688,15 +688,15 @@ function servcheck_edit_test() {
 function servcheck_request_validation() {
 	/* ================= input validation and session storage ================= */
 	$filters = array(
-		'rows' => array(
+		'rows' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '-1'
-		),
-		'page' => array(
+		],
+		'page' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'default' => '1'
-		),
+		],
 		'refresh' => array(
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
@@ -706,23 +706,23 @@ function servcheck_request_validation() {
 			'filter' => FILTER_VALIDATE_IS_REGEX,
 			'default' => '',
 			'pageset' => true,
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
 		'sort_column' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'display_name',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
 		'sort_direction' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'ASC',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
-		'state' => array(
+		'state' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '-1'
-		)
+		]
 	);
 
 	validate_store_request_vars($filters, 'sess_servchecktest');
@@ -734,33 +734,33 @@ function servcheck_log_request_validation() {
 
 	/* ================= input validation and session storage ================= */
 	$filters = array(
-		'id' => array(
+		'id' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'default' => '-1'
-		),
-		'rows' => array(
+		],
+		'rows' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '-1'
-		),
-		'page' => array(
+		],
+		'page' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'default' => '1'
-		),
+		],
 		'filter' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => '',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
 		'sort_column' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'lastcheck',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
 		'sort_direction' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'DESC',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
 	);
 
@@ -928,7 +928,7 @@ function servcheck_show_graph() {
 	$result = db_fetch_row_prepared('SELECT display_name
 		FROM plugin_servcheck_test
 		WHERE id = ?',
-		array($id));
+		[$id]);
 
 	print '<br/><br/><b>' . html_escape($result['display_name']) . ':</b><br/>';
 
@@ -954,7 +954,7 @@ function servcheck_show_last_data() {
 	$result = db_fetch_row_prepared('SELECT display_name, last_returned_data
 		FROM plugin_servcheck_test
 		WHERE id = ?',
-		array($id));
+		[$id]);
 
 	print '<br/><br/><b>' . __('Last returned data of test', 'servcheck') . ' ' . html_escape($result['display_name']) . ':</b><br/>';
 
@@ -966,16 +966,16 @@ function list_tests() {
 
 	/* ================= input validation and session storage ================= */
 	$filters = array(
-		'rows' => array(
+		'rows' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '-1'
-		),
-		'state' => array(
+		],
+		'state' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '-1'
-		),
+		],
 		'refresh' => array(
 			'filter' => FILTER_VALIDATE_INT,
 			'default' => read_config_option('log_refresh_interval')
@@ -983,12 +983,12 @@ function list_tests() {
 		'sort_column' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'display_name',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		),
 		'sort_direction' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'ASC',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 		)
 	);
 
@@ -1116,7 +1116,7 @@ function list_tests() {
 				(SELECT count(id) FROM plugin_servcheck_log WHERE test_id = ? ) as `count`
 				FROM plugin_servcheck_log
 				WHERE test_id = ? ORDER BY id DESC LIMIT 1",
-				array ($row['id'], $row['id']));
+				[$row['id'], $row['id']]);
 
 			if (!$last_log) {
 				$last_log['result'] = 'not yet';
@@ -1299,7 +1299,7 @@ function servcheck_filter() {
 						<select id='state'>
 							<option value='-1'><?php print __('Any', 'servcheck');?></option>
 							<?php
-							foreach (array('2' => 'Disabled', '1' => 'Enabled', '3' => 'Triggered') as $key => $row) {
+							foreach (['2' => 'Disabled', '1' => 'Enabled', '3' => 'Triggered'] as $key => $row) {
 								print "<option value='" . $key . "'" . (isset_request_var('state') && $key == get_request_var('state') ? ' selected' : '') . '>' . $row . '</option>';
 							}
 							?>

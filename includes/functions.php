@@ -67,7 +67,7 @@ function servcheck_show_tab($current_tab) {
 function plugin_servcheck_remove_old_users () {
 	$users = db_fetch_assoc('SELECT id FROM user_auth');
 
-	$u = array();
+	$u = [];
 
 	foreach ($users as $user) {
 		$u[] = $user['id'];
@@ -76,8 +76,8 @@ function plugin_servcheck_remove_old_users () {
 	$contacts = db_fetch_assoc('SELECT DISTINCT user_id FROM plugin_servcheck_contacts');
 
 	foreach ($contacts as $c) {
-		if (!in_array($c['user_id'], $u)) {
-			db_execute_prepared('DELETE FROM plugin_servcheck_contacts WHERE user_id = ?', array($c['user_id']));
+		if (!in_[$c['user_id'], $u]) {
+			db_execute_prepared('DELETE FROM plugin_servcheck_contacts WHERE user_id = ?', [$c['user_id']]);
 		}
 	}
 }
@@ -126,7 +126,7 @@ function plugin_servcheck_graph ($id, $interval) {
 		FROM plugin_servcheck_log
 		WHERE test_id = ? AND
 		lastcheck > DATE_SUB(NOW(), INTERVAL ? HOUR)
-		ORDER BY id", array($id, $interval));
+		ORDER BY id", [$id, $interval]);
 
 	if (cacti_sizeof($result) < 5) {
 		print __('No data', 'servcheck');
@@ -146,44 +146,44 @@ function plugin_servcheck_graph ($id, $interval) {
 	// Start chart attributes
 	$chart = array(
 		'bindto' => "#line_$xid",
-		'size' => array(
+		'size' => [
 			'height' => 300,
 			'width'=> 600
-		),
-		'point' => array (
+		],
+		'point' => [
 			'r' => 1.5
-		),
-		'data' => array(
+		],
+		'data' => [
 			'type' => 'area',
 			'x' => 'x',
 			'xFormat' => '%Y-%m-%d %H:%M:%S' // rikam mu, jaky je format te timeserie
-		)
+		]
 	);
 
-	$columns = array();
-	$axis = array();
-	$axes = array();
+	$columns = [];
+	$axis = [];
+	$axes = [];
 
 	// Add the X Axis first
-	$columns[] = array_merge(array('x'), $lastcheck);
-	$columns[] = array_merge(array('Total'), $total_time);
-	$columns[] = array_merge(array('Connect'), $connect_time);
-	$columns[] = array_merge(array('DNS '), $namelookup_time);
+	$columns[] = array_merge(['x'], $lastcheck);
+	$columns[] = array_merge(['Total'], $total_time);
+	$columns[] = array_merge(['Connect'], $connect_time);
+	$columns[] = array_merge(['DNS '], $namelookup_time);
 
 	// Setup the Axis
 	$axis['x'] = array(
 		'type' => 'timeseries',
 		'tick' => array(
 			'format'=> '%m-%d %H:%M',
-			'culling' => array('max' => 6),
+			'culling' => ['max' => 6],
 		)
 	);
 
 	$axis['y'] = array(
 		'tick' => array(
-			'label' => array(
+			'label' => [
 				'text' => 'Response in ms',
-			),
+			],
 			'show' => true
 		)
 	);

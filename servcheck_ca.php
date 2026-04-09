@@ -79,7 +79,7 @@ function ca_form_actions() {
 
 	/* setup some variables */
 	$ca_list  = '';
-	$ca_array = array();
+	$ca_array = [];
 
 	/* loop through each of the graphs selected on the previous page and get more info about them */
 	foreach ($_POST as $var => $val) {
@@ -88,7 +88,7 @@ function ca_form_actions() {
 			input_validate_input_number($matches[1]);
 			/* ==================================================== */
 
-			$ca_list .= '<li>' . db_fetch_cell_prepared('SELECT name FROM plugin_servcheck_ca WHERE id = ?', array($matches[1])) . '</li>';
+			$ca_list .= '<li>' . db_fetch_cell_prepared('SELECT name FROM plugin_servcheck_ca WHERE id = ?', [$matches[1]]) . '</li>';
 			$ca_array[] = $matches[1];
 		}
 	}
@@ -178,8 +178,8 @@ function ca_edit() {
 
 	draw_edit_form(
 		array(
-			'config' => array('no_form_tag' => true),
-			'fields' => inject_form_variables($servcheck_ca_fields, (isset($ca) ? $ca : array()))
+			'config' => ['no_form_tag' => true],
+			'fields' => inject_form_variables($servcheck_ca_fields, (isset($ca) ? $ca : []))
 		)
 	);
 
@@ -195,29 +195,29 @@ function ca_edit() {
 function request_validation() {
 	/* ================= input validation and session storage ================= */
 	$filters = array(
-		'rows' => array(
+		'rows' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '-1'
-			),
-		'page' => array(
+			],
+		'page' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'default' => '1'
-			),
-		'refresh' => array(
+			],
+		'refresh' => [
 			'filter' => FILTER_VALIDATE_INT,
 			'pageset' => true,
 			'default' => '20',
-			),
+			],
 		'sort_column' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'name',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 			),
 		'sort_direction' => array(
 			'filter' => FILTER_CALLBACK,
 			'default' => 'ASC',
-			'options' => array('options' => 'sanitize_search_string')
+			'options' => ['options' => 'sanitize_search_string']
 			)
 	);
 

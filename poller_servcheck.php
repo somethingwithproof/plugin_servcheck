@@ -107,7 +107,7 @@ $t = time() - (86400 * 30);
 if ($poller_id == 1) {
 	db_execute_prepared('DELETE FROM plugin_servcheck_log
 		WHERE lastcheck < FROM_UNIXTIME(?)',
-		array($t));
+		[$t]);
 
 	db_execute_prepared('DELETE FROM plugin_servcheck_processes
 		WHERE time < FROM_UNIXTIME(?)',
@@ -118,7 +118,7 @@ $tests = db_fetch_assoc_prepared('SELECT *
 	FROM plugin_servcheck_test
 	WHERE enabled = "on"
 	AND poller_id = ? ' . $test_cond,
-	array($poller_id));
+	[$poller_id]);
 
 $max_processes = 12;
 
@@ -127,7 +127,7 @@ if (cacti_sizeof($tests)) {
 		$running_processes = db_fetch_cell_prepared('SELECT COUNT(id)
 			FROM plugin_servcheck_processes
 			WHERE poller_id = ?',
-			array($poller_id));
+			[$poller_id]);
 
 		if ($max_processes - $running_processes > 0) {
 			plugin_servcheck_debug('Launching Service Check ' . $test['display_name'], $test);
@@ -157,7 +157,7 @@ while(true) {
 	$running = db_fetch_cell_prepared('SELECT COUNT(*)
 		FROM plugin_servcheck_processes
 		WHERE poller_id = ?',
-		array($poller_id));
+		[$poller_id]);
 
 	if ($running == 0) {
 		break;
@@ -177,7 +177,7 @@ foreach ($tests as $test) {
 		FROM plugin_servcheck_log
 		WHERE test_id = ?
 		ORDER BY id DESC LIMIT 1',
-		array($test['id']));
+		[$test['id']]);
 
 	if ($test_last['result'] == 'ok' || $test_last['result'] == 'not yet') {
 		$stat_ok++;

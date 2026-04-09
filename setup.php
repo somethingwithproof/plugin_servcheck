@@ -65,7 +65,7 @@ function plugin_servcheck_upgrade() {
 	db_execute_prepared('UPDATE plugin_realms
 		SET file = ?
 		WHERE file LIKE "%servcheck_test.php%"',
-		array('servcheck_test.php,servcheck_curl_code.php,servcheck_proxies.php,servcheck_ca.php'));
+		['servcheck_test.php,servcheck_curl_code.php,servcheck_proxies.php,servcheck_ca.php']);
 
 		api_plugin_register_hook('servcheck', 'replicate_out', 'servcheck_replicate_out', 'setup.php', '1');
 		api_plugin_register_hook('servcheck', 'config_settings', 'servcheck_config_settings', 'setup.php', '1');
@@ -216,7 +216,7 @@ function plugin_servcheck_config_arrays() {
 
 	$menu[__('Management')]['plugins/servcheck/servcheck_test.php'] = __('Service Checker', 'servcheck');
 
-	$files = array('index.php', 'plugins.php', 'servcheck_test.php');
+	$files = ['index.php', 'plugins.php', 'servcheck_test.php'];
 	if (in_array(get_current_page(), $files)) {
 		plugin_servcheck_check_config();
 	}
@@ -296,12 +296,12 @@ function servcheck_replicate_out($data) {
 
 	cacti_log('INFO: Replacting for the servcheck Plugin', false, 'REPLICATE');
 
-	$tables = array(
+	$tables = [
 		'plugin_servcheck_contacts',
 		'plugin_servcheck_proxies',
 		'plugin_servcheck_test',
 		'plugin_servcheck_ca'
-	);
+	];
 
 	if ($class == 'all') {
 		foreach($tables as $table) {

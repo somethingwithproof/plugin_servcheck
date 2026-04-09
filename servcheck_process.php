@@ -121,18 +121,18 @@ if (!cacti_sizeof($test)) {
 }
 
 $poller = db_fetch_cell_prepared('SELECT * FROM poller WHERE id = ?',
-	array($test['poller_id']));
+	[$test['poller_id']]);
 
 if ($poller == false) {
 	print 'Selected poller not found, changing to poller 1' . PHP_EOL;
 	db_execute_prepared('UPDATE plugin_servcheck_test
 		SET poller_id = 1
 		WHERE id = ?',
-		array($test['poller_id']));
+		[$test['poller_id']]);
 }
 
 $logs = db_fetch_cell_prepared('SELECT count(*) FROM plugin_servcheck_log WHERE test_id = ?',
-	array($test['id']));
+	[$test['id']]);
 
 if ($logs > 0 && $test['next_run'] < time() && !$force) {
 	plugin_servcheck_debug('INFO: Test ' . $test['display_name'] . ' skipped. The test is not run every poller cycle.', $test);
@@ -154,7 +154,7 @@ register_startup($test_id);
 
 /* attempt to get results 3 times before exiting */
 $x = 0;
-$results = array();
+$results = [];
 
 while ($x < 3) {
 	plugin_servcheck_debug('Service Check Number ' . $x, $test);
@@ -217,7 +217,7 @@ $test['status_change'] = false;
 $last_log = db_fetch_row_prepared('SELECT *
 		FROM plugin_servcheck_log
 		WHERE test_id = ? ORDER BY id DESC LIMIT 1',
-		array ($test['id']));
+		[$test['id']]);
 
 if (!$last_log) {
 	$last_log['result'] = 'not yet';
@@ -268,7 +268,7 @@ if ($last_log['result'] != $results['result'] || $last_log['result_search'] != $
 		$new_notify = db_fetch_cell_prepared('SELECT UNIX_TIMESTAMP(DATE_ADD(last_exp_notify, INTERVAL 1 DAY))
 			FROM plugin_servcheck_test
 			WHERE id = ?',
-			array($test['id']));
+			[$test['id']]);
 
 		if ($new_notify < time()) {
 			plugin_servcheck_debug('Certificate expired soon, will notify about expiration', $test);
@@ -303,7 +303,7 @@ if ($last_log['result'] != $results['result'] || $last_log['result_search'] != $
 		putenv('SERVCHECK_CERTIFICATE_EXPIRATION=' . (isset($test['expiry_date']) ? $test['expiry_date'] : 'Not tested'));
 
 		if (file_exists($command) && is_executable($command)) {
-			$output = array();
+			$output = [];
 			$return = 0;
 
 			exec($command, $output, $return);
@@ -431,7 +431,7 @@ function plugin_servcheck_send_notification($results, $test, $type, $last_log) {
 		$emails = db_fetch_cell_prepared('SELECT emails
 			FROM plugin_notification_lists
 			WHERE id = ?',
-			array($test['notify_list']));
+			[$test['notify_list']]);
 
 		if ($emails != '') {
 			$to .= ($to != '' ? ', ':'') . $emails;

@@ -30,7 +30,7 @@ class mxlookup {
 	var $dns_packet = NULL;
 	var $ANCOUNT    = 0;
 	var $cIx        = 0;
-	var $arrMX      = array();
+	var $arrMX      = [];
 	var $dns_repl_domain;
 	var $dns_reply  = '';
 
@@ -70,7 +70,7 @@ class mxlookup {
 
 			//$mxPref = ord($this->gdi($this->cIx));
 			//$this->parse_data($curmx);
-			//$this->arrMX[] = array('MX_Pref' => $mxPref, 'MX' => $curmx);
+			//$this->arrMX[] = ['MX_Pref' => $mxPref, 'MX' => $curmx];
 			//$this->cIx += 3;
 		}
 	}
@@ -80,7 +80,7 @@ class mxlookup {
 	}
 
 	function parse_data(&$retval) {
-		$arName = array();
+		$arName = [];
 		$byte   = ord($this->gdi($this->cIx));
 
 		while($byte !== 0) {

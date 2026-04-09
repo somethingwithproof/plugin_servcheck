@@ -75,7 +75,7 @@ $service_types = array(
 	'mqtt_mqtt'       => __('MQTT plaintext, default port 1883', 'servcheck'),
 );
 
-$service_types_ports = array(
+$service_types_ports = [
 
 	'web_http'        => 80,
 	'web_https'       => 443,
@@ -108,7 +108,7 @@ $service_types_ports = array(
 
 //	'telnet_telnet'   => 23,
 	'mqtt_mqtt'       => 1883,
-);
+];
 
 
 $graph_interval = array (
@@ -188,10 +188,10 @@ $servcheck_seconds = array(
 	10 => __('%d Seconds', 10, 'servcheck'),
 );
 
-$servcheck_notify_formats = array(
+$servcheck_notify_formats = [
 	SERVCHECK_FORMAT_HTML  => 'html',
 	SERVCHECK_FORMAT_PLAIN => 'plain',
-);
+];
 
 if (db_table_exists('plugin_servcheck_contacts')) {
 	$servcheck_contact_users = db_fetch_assoc("SELECT pwc.id, pwc.data, pwc.type, ua.full_name
@@ -200,10 +200,10 @@ if (db_table_exists('plugin_servcheck_contacts')) {
 		ON ua.id=pwc.user_id
 		WHERE pwc.data != ''");
 } else {
-	$servcheck_contact_users = array();
+	$servcheck_contact_users = [];
 }
 
-$servcheck_notify_accounts = array();
+$servcheck_notify_accounts = [];
 if (!empty($servcheck_contact_users)) {
 	foreach ($servcheck_contact_users as $servcheck_contact_user) {
 		$servcheck_notify_accounts[$servcheck_contact_user['id']] = $servcheck_contact_user['full_name'] . ' - ' . ucfirst($servcheck_contact_user['type']);
@@ -300,14 +300,14 @@ $servcheck_proxy_fields = array(
 		'size' => '40',
 		'default' => ''
 	),
-	'id' => array(
+	'id' => [
 		'method' => 'hidden_zero',
 		'value' => '|arg1:id|'
-	),
-	'save_component_proxy' => array(
+	],
+	'save_component_proxy' => [
 		'method' => 'hidden',
 		'value' => '1'
-	)
+	]
 );
 
 $servcheck_test_fields = array(
@@ -544,10 +544,10 @@ $servcheck_test_fields = array(
 		'max_length' => '20',
 		'value' => '|arg1:external_id|',
 	),
-	'id' => array(
+	'id' => [
 		'method' => 'hidden_zero',
 		'value' => '|arg1:id|'
-	),
+	],
 );
 
 $curl_error = array(

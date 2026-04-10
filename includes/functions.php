@@ -76,7 +76,7 @@ function plugin_servcheck_remove_old_users () {
 	$contacts = db_fetch_assoc('SELECT DISTINCT user_id FROM plugin_servcheck_contacts');
 
 	foreach ($contacts as $c) {
-		if (!in_[$c['user_id'], $u]) {
+		if (!in_array($c['user_id'), $u]) {
 			db_execute_prepared('DELETE FROM plugin_servcheck_contacts WHERE user_id = ?', [$c['user_id']]);
 		}
 	}

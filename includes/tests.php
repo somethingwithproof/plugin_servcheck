@@ -192,7 +192,7 @@ function curl_try ($test) {
 
 	plugin_servcheck_debug('cURL options: ' . clean_up_lines(var_export($options, true)));
 
-	curl_setopt_[$process,$options];
+	curl_setopt_array($process, $options);
 
 	plugin_servcheck_debug('Executing curl request', $test);
 
@@ -421,7 +421,7 @@ function mqtt_try ($test) {
 
 	plugin_servcheck_debug('cURL options: ' . clean_up_lines(var_export($options, true)));
 
-	curl_setopt_[$process,$options];
+	curl_setopt_array($process, $options);
 
 	plugin_servcheck_debug('Executing curl request', $test);
 
@@ -579,7 +579,7 @@ function doh_try ($test) {
 
 	plugin_servcheck_debug('cURL options: ' . clean_up_lines(var_export($options, true)));
 
-	curl_setopt_[$process,$options];
+	curl_setopt_array($process, $options);
 
 	plugin_servcheck_debug('Executing curl request', $test);
 

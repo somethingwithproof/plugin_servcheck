@@ -245,7 +245,7 @@ function ca() {
 	$sql_where = '';
 
 	if (get_request_var('filter') != '') {
-		$sql_where .= ($sql_where == '' ? 'WHERE ' : ' AND ') . ' name LIKE "%' . get_request_var('filter');
+		$sql_where .= ($sql_where == '' ? 'WHERE ' : ' AND ') . 'name LIKE ' . db_qstr('%' . get_request_var('filter') . '%');
 	}
 
 	$sql_order = get_order_string();
@@ -391,4 +391,3 @@ function servcheck_filter() {
 	<?php
 	html_end_box();
 }
-

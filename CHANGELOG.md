@@ -2,6 +2,8 @@
 
 --- develop ---
 
+* security: Sanitize and bind the filter search on the CA, proxy and credential pages
+
 --- 0.4 ---
 
 * feature: Add cpu/memory statistics

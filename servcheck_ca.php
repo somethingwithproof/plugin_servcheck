@@ -236,7 +236,7 @@ function request_validation() {
 			]
 	];
 
-	validate_store_request_vars($filters, 'sess_servcheck_proxy');
+	validate_store_request_vars($filters, 'sess_servcheck_ca');
 }
 
 function data_list() {
